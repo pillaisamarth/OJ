@@ -1,8 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
+# Create your views here.
 
 def login(request):
-    return HttpResponse("HEllo there!")
-
-# Create your views here.
+    return HttpResponse("hps!")
