@@ -7,7 +7,7 @@ from django.urls import reverse
 class Problem(models.Model):
     title = models.CharField(max_length = 200)
     statement = models.CharField(max_length=500)
-    difficulty = models.IntegerField(help_text="Enter your solution")
+    difficulty = models.IntegerField()
 
     def __str__(self) -> str:
         return self.title
