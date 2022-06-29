@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Problemlist</title>
+    </head>
+    <body>
+        <h1 style="text-align: center;">Problem List</h1>
+        <ul>
+            {% for problem in problems %} 
+            <li>
+               <a href="{{ problem.get_absolute_url }}">{{problem.title}}</a> 
+            </li>
+            {% endfor %} 
+        </ul>
+       
+    </body>
+</html>
