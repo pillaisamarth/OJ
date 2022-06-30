@@ -19,7 +19,7 @@ class Solution(models.Model):
     problem = models.ForeignKey(Problem, on_delete=models.CASCADE)
     verdict = models.CharField(max_length=100)
     submitted_at = models.DateTimeField(auto_now_add = True)
-    solution_file = models.TextField(default="Enter code")
+    solution_file = models.FileField()
     
     def __str__(self) -> str:
         return self.problem.title

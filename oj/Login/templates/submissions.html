@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        table, th, td {
+            border:1px solid black;
+            border-collapse: collapse;
+        }
+        td{
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">
+        <strong>Submissions</strong>
+    </h1>
+    <br><br>
+    
+        <table style="width: 100%;">
+            <tr>
+                <th><strong>Problem</strong></th>
+                <th><strong>Verdict</strong></th>
+                <th><strong>Solution</strong></th>
+            </tr>
+            {% for solution in solutions %} 
+            <tr>
+                <td>{{solution.problem.title}}</td>
+                <td>
+                    {% if solution.verdict == 'AC' %} 
+                    <strong style="color: green;">AC</strong>
+                    {% else %} 
+                    <strong style="color: red;">WA</strong>
+                    {% endif %} 
+                </td>
+                <td>
+                    {{solution.solution_file}}
+                </td>
+            </tr>
+            {% endfor %} 
+        </table>
+</body>
+</html>
