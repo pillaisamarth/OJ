@@ -9,9 +9,12 @@
 <body>
     
     <h1 style="text-align: center;">{{problem.title}}</h1>
+    <div style="text-align: end;">
+        <a href="{% url 'submissions' %}">
+            View Submissions</a></div>
     <p>{{problem.statement}}</p>
 
-    <form action="{% url 'submissions' %}" method="post">
+    <form action="{% url 'submissions' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{form}}
         <input type="hidden" name="next" value="{{request.path}}">
