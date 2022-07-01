@@ -8,7 +8,7 @@ from django.core.files.uploadedfile import TemporaryUploadedFile
 from .forms import SubmissionForm
 
 
-from .models import Problem, Solution
+from .models import Problem, Submission
 # Create your views here.
 
 def login(request):
@@ -35,7 +35,7 @@ def problemdetail(request, id):
 
 def submit(request):
 
-    solutions = Solution.objects.all()
+    submissions = Submission.objects.all()
 
     if request.method == 'POST':
         
@@ -45,9 +45,11 @@ def submit(request):
 
             id = form.cleaned_data["problem_id"]
             problem = get_object_or_404(Problem, id = id)
-            file = request.FILES["solution"]
+
+            submission = form.cleaned_data["submission"]
             
-            output = handle_uploaded_file(file, problem.testcase_set.all())
+            
+            output = handle_submission(submission, problem.testcase_set.all())
 
             if output is True:
                 verdict = "AC"
@@ -56,13 +58,13 @@ def submit(request):
             
             print(verdict)
 
-            s = Solution(problem = problem, verdict = verdict, solution_file = file)
+            s = Submission(problem = problem, verdict = verdict, submission = submission)
             s.save()
 
-            solutions = Solution.objects.all()
+            submissions = Submission.objects.all()
 
             context = {
-                "solutions" : solutions
+                "submissions" : submissions
             }
 
             return render(request, "submissions.html", context=context)
@@ -71,16 +73,14 @@ def submit(request):
         return HttpResponseRedirect(next)
     
     return render(request, "submissions.html", {
-        "solutions" : solutions
+        "submissions" : submissions
     })
 
 
-def handle_uploaded_file(file, testcases):
+def handle_submission(submission, testcases):
 
-    with open('input.cpp', 'wb+') as destination:
-        for chunk in file.chunks():
-            print(chunk)
-            destination.write(chunk)
+    with open('input.cpp', 'w') as destination:
+        destination.write(submission)
 
     subprocess.run(["g++", "input.cpp", "-o", "output.exe"])
 
@@ -98,3 +98,9 @@ def handle_uploaded_file(file, testcases):
     return True
 
 
+def view_submission(request, id):
+    submission = get_object_or_404(Submission, id = id)
+    context = {
+        'submitted_code': submission.submission
+    }
+    return render(request, "viewsubmission.html", context = context)

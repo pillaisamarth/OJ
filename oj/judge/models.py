@@ -15,14 +15,17 @@ class Problem(models.Model):
     def get_absolute_url(self):
         return reverse('problemdetail', args=str(self.id))
 
-class Solution(models.Model):
+class Submission(models.Model):
     problem = models.ForeignKey(Problem, on_delete=models.CASCADE)
     verdict = models.CharField(max_length=100)
     submitted_at = models.DateTimeField(auto_now_add = True)
-    solution_file = models.FileField()
+    submission = models.TextField()
     
     def __str__(self) -> str:
         return self.problem.title
+
+    def get_absolute_url(self):
+        return reverse('viewsubmission', args = [str(self.id)])
 
 class TestCase(models.Model):
     problem = models.ForeignKey(Problem, on_delete=models.CASCADE)

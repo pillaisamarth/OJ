@@ -25,20 +25,24 @@
             <tr>
                 <th><strong>Problem</strong></th>
                 <th><strong>Verdict</strong></th>
-                <th><strong>Solution</strong></th>
+                <th><strong>Submission Id</strong></th>
+                <th><strong>Submitted at</strong></th>
             </tr>
-            {% for solution in solutions %} 
+            {% for submission in submissions %} 
             <tr>
-                <td>{{solution.problem.title}}</td>
+                <td>{{submission.problem.title}}</td>
                 <td>
-                    {% if solution.verdict == 'AC' %} 
+                    {% if submission.verdict == 'AC' %} 
                     <strong style="color: green;">AC</strong>
                     {% else %} 
                     <strong style="color: red;">WA</strong>
                     {% endif %} 
                 </td>
                 <td>
-                    {{solution.solution_file}}
+                    <a href="{{ submission.get_absolute_url }}">{{submission.id}}</a>
+                </td>
+                <td>
+                    {{submission.submitted_at}}
                 </td>
             </tr>
             {% endfor %} 
