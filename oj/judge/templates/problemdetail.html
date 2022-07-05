@@ -18,6 +18,7 @@
         {% csrf_token %}
         {{form}}
         <input type="hidden" name="next" value="{{request.path}}">
+        <input type = "hidden" name = "problem_id" value="{{problem.id}}">
         <input type="submit" value="Submit">
     </form>
 </body>
