@@ -24,13 +24,15 @@
         <table style="width: 100%;">
             <tr>
                 <th><strong>Problem</strong></th>
+                <th><strong>Language</strong></th>
                 <th><strong>Verdict</strong></th>
                 <th><strong>Submission Id</strong></th>
-                <th><strong>Submitted at</strong></th>
+                <th><strong>Submitted at</strong></th>  
             </tr>
             {% for submission in submissions %} 
             <tr>
                 <td>{{submission.problem.title}}</td>
+                <td>{{submission.get_language_display}}</td>
                 <td>
                     {% if submission.verdict == 'AC' %} 
                     <strong style="color: green;">AC</strong>

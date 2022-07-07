@@ -42,7 +42,10 @@ class Submission(models.Model):
         return self.problem.title
 
     def get_absolute_url(self):
-        return reverse('viewsubmission', args = [str(self.id)])
+        return reverse('submission', args = [str(self.id)])
+    
+    class Meta:
+        ordering = ['-submitted_at']
 
 # file path field not letting store path within the app.
 # allowing to store path outside the project
