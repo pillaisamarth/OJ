@@ -1,9 +1,11 @@
 from codecs import unicode_escape_encode
 import filecmp
+from multiprocessing import context
 from re import L
 import sys
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 import subprocess
 import os
@@ -22,6 +24,7 @@ def login(request):
 
 def problemlist(request):
     problems = Problem.objects.all()
+    print(request.user)
     
     context = {
         "problems" : problems
@@ -29,6 +32,8 @@ def problemlist(request):
     return render(request, 'problemlist.html', context = context)
 
 def problemdetail(request, id):
+
+    print(request.user)
     problem = get_object_or_404(Problem, id = id)
     form = SubmissionForm()
     context = {
@@ -37,7 +42,14 @@ def problemdetail(request, id):
     }
     return render(request, "problemdetail.html", context = context)
 
+
 def submit(request):
+
+    if not request.user.is_authenticated:
+        next = request.META.get('HTTP_REFERER')
+        return redirect('%s?next=%s'%(settings.LOGIN_URL, next))
+
+
     
     form = SubmissionForm(request.POST, request.FILES)
     folder = os.path.join(settings.FILE_PATH_FIELD_DIR, 'submissions')
@@ -70,9 +82,6 @@ def submit(request):
 
         verdict="AC"
 
-        print(filename)
-
-
         for testcase in testcases:
             input = open(testcase.input, 'r')
             oppath = os.path.join(folder, 'output.txt')
@@ -95,9 +104,6 @@ def submit(request):
                 ret = output.wait()
                 op.flush()
             
-            
-
-           
             if filecmp.cmp(oppath, testcase.output) != True:
                 verdict = "WA"
                 break
@@ -105,44 +111,24 @@ def submit(request):
         path = os.path.join(filefolder, filename_with_extension)
         submission=Submission(problem = problem, verdict = verdict, language = language, submission = path)
         submission.save()
-        print(verdict)
 
-        
-
-            
-
-        
+    return HttpResponseRedirect(reverse('submissions', args=[str(problem_id)]))
 
 
-    return HttpResponse(verdict)
-            
-
-
-
-def handle_submission(submission, testcases):
-
-    with open('input.cpp', 'w') as destination:
-        destination.write(submission)
-
-    subprocess.run(["g++", "input.cpp", "-o", "output.exe"])
-
-    for testcase in testcases:
-
-        input = testcase.input
-        input = bytes(input, 'utf-8')
-
-        output = subprocess.run(['output.exe'], capture_output=True, input = input, timeout=10)
-        output = output.stdout.decode("utf-8")
-
-        if output != testcase.output:
-            return False
-
-    return True
-
-
-def view_submission(request, id):
-    submission = get_object_or_404(Submission, id = id)
+def submissions(request, id):
+    
+    submissions = Submission.objects.filter(problem__id = id)
     context = {
-        'submitted_code': submission.submission
+        'submissions' : submissions
     }
-    return render(request, "viewsubmission.html", context = context)
+
+    return render(request, 'submissions.html', context=context)
+            
+
+        
+
+def submission(request, id):
+    return HttpResponse("ok")
+            
+
+

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        .container{
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+    </style>
+</head>
+<body class="container">
+    <div class="container">
+        <form action="{% url 'login' %}" method="post">
+            {% csrf_token %} 
+            <label for="username">Username</label> 
+            <input type="text" id="username" name="username"> <br><br>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password"><br><br>
+            <input type="hidden" name="next" value="{{ next }}">
+            <input type="submit" value="Login">
+        </form>
+        <br>
+        {% if error %} 
+        <p style="color: red;">{{error}}</p>
+        {% endif %}
+    </div>
+</body>
+</html>
