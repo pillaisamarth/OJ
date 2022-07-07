@@ -1,5 +1,6 @@
 from codecs import unicode_escape_encode
 import filecmp
+from multiprocessing import context
 from re import L
 import sys
 from django.shortcuts import get_object_or_404, render, redirect
@@ -110,12 +111,9 @@ def submit(request):
         path = os.path.join(filefolder, filename_with_extension)
         submission=Submission(problem = problem, verdict = verdict, language = language, submission = path)
         submission.save()
-            
-    return HttpResponse(verdict)
 
-           
+    return HttpResponseRedirect(reverse('submissions', args=[str(problem_id)]))
 
-        
 
 def submissions(request, id):
     
