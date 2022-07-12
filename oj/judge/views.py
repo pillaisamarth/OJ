@@ -11,6 +11,7 @@ import subprocess
 import os
 from django.core.files.storage import FileSystemStorage
 from oj import settings
+import docker
 
 
 from .forms import SubmissionForm
@@ -53,12 +54,15 @@ def submit(request):
     
     form = SubmissionForm(request.POST, request.FILES)
     folder = os.path.join(settings.FILE_PATH_FIELD_DIR, 'submissions')
+
+
     
 
     if form.is_valid():
         count = Submission.objects.all().count()
         filefolder = os.path.join(folder, str(count + 1))
-        os.mkdir(filefolder)
+        if os.path.isdir(filefolder)==False:
+            os.mkdir(filefolder)
 
         submission = form.cleaned_data["submission"]
         fs = FileSystemStorage(location=filefolder)
@@ -70,11 +74,7 @@ def submit(request):
         problem = get_object_or_404(Problem, id = problem_id)
         language = form.cleaned_data["language"]
         
-
-        if language == 'cpp':
-            path = os.path.join(filefolder, filename)
-            subprocess.run(["cmd", "/c", f"g++ {path}.cpp -o {path}.exe"])
-        elif language == 'java':
+        if language == 'java':
             path = os.path.join(filefolder, filename)
             subprocess.run(["cmd", "/c", f"javac {path}.java"])
 
@@ -84,29 +84,32 @@ def submit(request):
 
         for testcase in testcases:
             input = open(testcase.input, 'r')
-            oppath = os.path.join(folder, 'output.txt')
-            op = open(oppath, 'w')
+            inpath = os.path.join(filefolder, 'input.txt')
+            inp = open(inpath, 'w')
+            for line in input:
+                inp.write(line)
+
+            inp.close()
+
             if language == 'cpp':
-                path = os.path.join(filefolder, filename)
-                output = subprocess.Popen(f"{path}.exe",
-                 stdin=input, stdout=op)
-                ret = output.wait()
-                op.flush()
-            elif language == 'java':
-                output = subprocess.Popen(f"java -cp {filefolder} {filename}",
-                stdin = input, stdout=op)
-                ret = output.wait()
-                op.flush()
-            else:
-                path = os.path.join(filefolder, filename)
-                output = subprocess.Popen(f"py {path}.py",
-                stdin = input, stdout=op)
-                ret = output.wait()
-                op.flush()
+                client = docker.from_env()
+                container = client.containers.run('cpmaker',
+                 f'cpp_ex.sh {filename_with_extension} input.txt',
+                 volumes=[f'{filefolder}:/mnt/vol1'], working_dir='/mnt/vol1')
+
+            outpath = os.path.join(filefolder, 'out.txt')
+            f = open(outpath, 'r')
+            r = open(testcase.output, 'r')
+
             
-            if filecmp.cmp(oppath, testcase.output) != True:
+            
+            if  f.read()!= r.read():
+                print(testcase.output)
                 verdict = "WA"
                 break
+
+            f.close()
+            r.close()
         
         path = os.path.join(filefolder, filename_with_extension)
         submission=Submission(problem = problem, verdict = verdict, language = language, submission = path)
