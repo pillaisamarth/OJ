@@ -95,21 +95,33 @@ def submit(request):
                 client = docker.from_env()
                 container = client.containers.run('cpmaker',
                  f'cpp_ex.sh {filename_with_extension} input.txt',
+                 auto_remove=True,
                  volumes=[f'{filefolder}:/mnt/vol1'], working_dir='/mnt/vol1')
 
-            outpath = os.path.join(filefolder, 'out.txt')
-            f = open(outpath, 'r')
-            r = open(testcase.output, 'r')
+            # files written using notepad when read as binary 'rb' in 
+            # python contains \r\n in place of \n which adds to the total
+            # size of the file and thus the filecmp fails(it processes them
+            # as binary files). We will temporarily convert our out.txt file
+            # to replace every \n instances with \r\n instances
+            # However a better way is to replace every instance of '\r'
+            # with '' in the op1.txt file (output file stored in server)
 
             
+
+            outputpath = os.path.join(filefolder, 'out.txt') # getting filename of the file outputted by container
+            outputfile = open(outputpath, 'rb') #getting the file
+            output = outputfile.read() #getting the file cotents
+            outputfile.close() 
+            output = output.replace(b'\n', bytes('\r\n', 'utf-8')) # replacing every instance of \n with \r\n. Replace bytes with bytes
+            outputfile = open(outputpath, 'wb') #writing the revised content back to the file
+            outputfile.write(output)
+            outputfile.close()
             
-            if  f.read()!= r.read():
-                print(testcase.output)
+            
+            if  filecmp.cmp(outputpath, testcase.output) == False:
                 verdict = "WA"
                 break
 
-            f.close()
-            r.close()
         
         path = os.path.join(filefolder, filename_with_extension)
         submission=Submission(problem = problem, verdict = verdict, language = language, submission = path)
