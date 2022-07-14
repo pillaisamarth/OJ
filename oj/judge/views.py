@@ -1,7 +1,5 @@
-from codecs import unicode_escape_encode
 import filecmp
-from multiprocessing import context
-from re import L
+from socket import timeout
 import sys
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -82,6 +80,9 @@ def submit(request):
 
         verdict="AC"
 
+        #autoremove caused problems in running python scripts in containers
+        #replaced autoremove with remove
+
         for testcase in testcases:
             input = open(testcase.input, 'r')
             inpath = os.path.join(filefolder, 'input.txt')
@@ -95,8 +96,23 @@ def submit(request):
                 client = docker.from_env()
                 container = client.containers.run('cpmaker',
                  f'cpp_ex.sh {filename_with_extension} input.txt',
-                 auto_remove=True,
+                 remove=True,
                  volumes=[f'{filefolder}:/mnt/vol1'], working_dir='/mnt/vol1')
+            elif language == 'java':
+                client = docker.from_env()
+                container = client.containers.run('javamaker',
+                 f'java_ex.sh {filename} input.txt',
+                 remove=True,
+                 volumes=[f'{filefolder}:/mnt/vol1'], working_dir='/mnt/vol1')
+            else :
+                client = docker.from_env()
+                container = client.containers.run('pythonmaker',
+                 f'python_ex.sh {filename_with_extension} input.txt',
+                 remove=True,
+                 volumes=[f'{filefolder}:/mnt/vol1'], working_dir='/mnt/vol1')
+
+
+                 
 
             # files written using notepad when read as binary 'rb' in 
             # python contains \r\n in place of \n which adds to the total
