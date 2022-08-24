@@ -27,16 +27,17 @@ def testcase_input():
     return os.path.join(settings.FILE_PATH_FIELD_DIR, 'testcases', 'input')
 
 def testcase_output():
-    return os.path.join(settings.FILE_PATH_FIELD_DIR, 'testcases', 'output')
+    return os.path.join(settings.MEDIA_ROOT, 'testcases')
 
 
 class Submission(models.Model):
     problem = models.ForeignKey(Problem, on_delete=models.CASCADE)
-    verdict = models.CharField(max_length=100)
+    verdict = models.CharField(max_length=255)
     submitted_at = models.DateTimeField(auto_now_add = True)
     language = models.CharField(max_length=255, choices=constant.AVAILABLE_LANGUAGES
     , default='cpp')
-    submission = models.FilePathField(max_length=255, path = submission_path, recursive=True)
+    submittedFilePath = models.FilePathField(max_length=255)
+
     
     def __str__(self) -> str:
         return self.problem.title
@@ -51,11 +52,16 @@ class Submission(models.Model):
 # allowing to store path outside the project
 class TestCase(models.Model):
     problem = models.ForeignKey(Problem, on_delete=models.CASCADE)
-    input = models.FilePathField(max_length=255, path=testcase_input)
-    output = models.FilePathField(max_length=255, path=testcase_output)
+    inputPath = models.FilePathField(max_length=255)
+    outputPath = models.FilePathField(max_length=255)
+
+    
+
 
     def __str__(self) -> str:
         return self.problem.title
+
+    
 
 
 

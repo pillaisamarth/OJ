@@ -34,10 +34,10 @@
                 <td>{{submission.problem.title}}</td>
                 <td>{{submission.get_language_display}}</td>
                 <td>
-                    {% if submission.verdict == 'AC' %} 
+                    {% if submission.verdict == "AC\r\n" %} 
                     <strong style="color: green;">AC</strong>
                     {% else %} 
-                    <strong style="color: red;">WA</strong>
+                    <strong style="color: red;">{{submission.verdict}}</strong>
                     {% endif %} 
                 </td>
                 <td>
