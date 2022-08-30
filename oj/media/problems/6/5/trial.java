@@ -7,5 +7,8 @@ public class trial {
 	int b = sc.nextInt();
 	sc.close();
         System.out.println(a * b);
+	while(true){
+	}
+		
     }
 }

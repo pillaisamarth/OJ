@@ -193,6 +193,9 @@ def submitFile(request):
                 f.write(testCaseAbsoluteUrl)
                 f.write("\n")
 
+        submittedFileWithoutExtension = os.path.splitext(submittedFile.name)[0]
+
+        verdict = "None"
 
 # Spawning docker containers and run codes
         if language == 'cpp':
@@ -201,11 +204,21 @@ def submitFile(request):
             f'iter.sh {submittedFile.name} input.txt', 
             remove=True,
             volumes=[f'{workArea}:/mnt/vl1'], working_dir='/mnt/vl1')
+            verdict = container
+        elif language == 'java':
+            client = docker.from_env()
+            container = client.containers.run('javamaker', 
+            f'iter.sh {submittedFileWithoutExtension} input.txt', 
+            remove = True,
+            volumes=[f'{workArea}:/mnt/vl1'], working_dir='/mnt/vl1')
+            verdict = container
         
+        print(verdict)
 
 # updating the verdict of the submission in the database
-        verdictFilePath = os.path.join(workArea, 'verdict.txt')
-        verdict = open(verdictFilePath, 'r').read()
+        
+        verdict = verdict.decode('utf-8')
+        verdict = verdict.replace('\n', '')
         submission.verdict = verdict
         submission.save()
 

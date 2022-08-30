@@ -6,6 +6,7 @@ public class trial {
         int a = sc.nextInt();
 	int b = sc.nextInt();
 	sc.close();
+	while(true){}
         System.out.println(a * b);
     }
 }
