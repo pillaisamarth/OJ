@@ -14,7 +14,7 @@
             View Submissions</a></div>
     <p>{{problem.statement}}</p>
 
-    <form action="{% url 'submit' %}" method="post" enctype="multipart/form-data">
+    <form action="{% url 'submitFile' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{form}}
         <input type="hidden" name="next" value="{{request.path}}">
