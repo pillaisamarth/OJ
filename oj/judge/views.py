@@ -1,6 +1,7 @@
 import filecmp
 from socket import timeout
 import sys
+from urllib.parse import urljoin
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -10,6 +11,7 @@ import os
 from django.core.files.storage import FileSystemStorage
 from oj import settings
 import docker
+from django.utils.encoding import filepath_to_uri
 
 from django.templatetags.static import static
 
@@ -17,7 +19,7 @@ from django.templatetags.static import static
 from .forms import SubmissionForm, TestCaseUploadForm
 
 
-from .models import Problem, Submission, TestCase, testcase_output
+from .models import Problem, Submission, TestCase
 # Create your views here.
 
 def login(request):
@@ -168,6 +170,9 @@ def submitFile(request):
         absolutePath = os.path.join(settings.MEDIA_ROOT, relativePath)
         fs = FileSystemStorage()
         fs.save(relativePath, submittedFile)
+        print(filepath_to_uri(relativePath))
+        u = urljoin(fs.base_url, filepath_to_uri(relativePath))
+        print(u)
 
 # Saving the submission in the database
         submission = Submission(problem=problem, verdict='None', language=language, submittedFilePath=absolutePath)
@@ -209,6 +214,13 @@ def submitFile(request):
             client = docker.from_env()
             container = client.containers.run('javamaker', 
             f'iter.sh {submittedFileWithoutExtension} input.txt', 
+            remove = True,
+            volumes=[f'{workArea}:/mnt/vl1'], working_dir='/mnt/vl1')
+            verdict = container
+        else:
+            client = docker.from_env()
+            container = client.containers.run('pythonmaker',
+            f'iter.sh {submittedFile.name} input.txt',
             remove = True,
             volumes=[f'{workArea}:/mnt/vl1'], working_dir='/mnt/vl1')
             verdict = container

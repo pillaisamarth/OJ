@@ -1,4 +1,3 @@
-from xml.etree.ElementInclude import include
 from django.db import models
 from django.urls import reverse
 import os
@@ -20,23 +19,13 @@ class Problem(models.Model):
         return reverse('problemdetail', args=str(self.id))
 
 
-def submission_path():
-    return os.path.join(settings.FILE_PATH_FIELD_DIR, 'submissions')
-
-def testcase_input():
-    return os.path.join(settings.FILE_PATH_FIELD_DIR, 'testcases', 'input')
-
-def testcase_output():
-    return os.path.join(settings.MEDIA_ROOT, 'testcases')
-
-
 class Submission(models.Model):
     problem = models.ForeignKey(Problem, on_delete=models.CASCADE)
     verdict = models.CharField(max_length=255)
     submitted_at = models.DateTimeField(auto_now_add = True)
     language = models.CharField(max_length=255, choices=constant.AVAILABLE_LANGUAGES
     , default='cpp')
-    submittedFilePath = models.FilePathField(max_length=255)
+    submittedFilePath = models.FilePathField(path=settings.MEDIA_ROOT, max_length=255)
 
     
     def __str__(self) -> str:
@@ -52,14 +41,14 @@ class Submission(models.Model):
 # allowing to store path outside the project
 class TestCase(models.Model):
     problem = models.ForeignKey(Problem, on_delete=models.CASCADE)
-    inputPath = models.FilePathField(max_length=255)
-    outputPath = models.FilePathField(max_length=255)
-
-    
-
+    inputPath = models.FilePathField(path=settings.MEDIA_ROOT, max_length=255)
+    outputPath = models.FilePathField(path=settings.MEDIA_ROOT, max_length=255)
 
     def __str__(self) -> str:
         return self.problem.title
+    
+
+
 
     
 
