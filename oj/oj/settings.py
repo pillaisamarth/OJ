@@ -46,8 +46,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
+    'rest_framework',
     'Login',
-    'judge'
+    'judge',
 ]
 
 MIDDLEWARE = [
@@ -141,3 +143,5 @@ try:
     HOSTNAME = socket.gethostname()
 except:
     HOSTNAME = 'localhost'
+
+CORS_ORIGIN_ALLOW_ALL = True

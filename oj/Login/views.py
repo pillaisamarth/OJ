@@ -23,3 +23,11 @@ def login_view(request):
     else:
         context = {'error': 'invalid credentials'}
         return render(request, "login.html", context=context)
+
+
+def register_view(request):
+
+    if request.method == 'GET':
+        return render(request, 'register.html')
+
+    first_name = request.POST['user']
