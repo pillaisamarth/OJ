@@ -9,7 +9,7 @@ from django.urls import reverse
 import subprocess
 import os
 from django.core.files.storage import FileSystemStorage
-from judge.serializers import SubmissionSerializer
+from judge.serializers import SubmissionSerializer, ProblemListSerializer, ProblemDetailSerializer
 from oj import settings
 import docker
 from django.utils.encoding import filepath_to_uri
@@ -20,6 +20,7 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from rest_framework import status
+from . import constant
 
 from .forms import SubmissionForm, TestCaseUploadForm
 
@@ -38,6 +39,29 @@ def problemlist(request):
         "problems" : problems
     }
     return render(request, 'problemlist.html', context = context)
+
+class ProblemList(APIView):
+
+    def get(self, request):
+        problems = Problem.objects.all()
+        serializer = ProblemListSerializer(problems, many=True)
+        return Response(serializer.data)
+
+class ProblemDetail(APIView):
+
+    serializer_class = ProblemDetailSerializer
+
+    def get(self, request, id):
+        problem=get_object_or_404(Problem, id = id)
+        languages = constant.AVAILABLE_LANGUAGES
+        data = {
+            'title': problem.title,
+            'statement': problem.statement,
+            'difficulty': problem.difficulty,
+            'languages': languages
+        }
+        return Response(data)
+
 
 def problemdetail(request, id):
 

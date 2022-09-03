@@ -53,6 +53,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -145,3 +146,7 @@ except:
     HOSTNAME = 'localhost'
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+DEFAULT_PERMISSION_CLASSES = [
+    'rest_framework.permissions.AllowAny',
+]
