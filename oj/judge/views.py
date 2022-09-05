@@ -31,15 +31,6 @@ from .models import Problem, Submission, TestCase
 def login(request):
     return HttpResponse("hello!")
 
-def problemlist(request):
-    problems = Problem.objects.all()
-    print(request.user)
-    
-    context = {
-        "problems" : problems
-    }
-    return render(request, 'problemlist.html', context = context)
-
 class ProblemList(APIView):
 
     def get(self, request):
@@ -55,24 +46,13 @@ class ProblemDetail(APIView):
         problem=get_object_or_404(Problem, id = id)
         languages = constant.AVAILABLE_LANGUAGES
         data = {
+            'id': problem.id,
             'title': problem.title,
             'statement': problem.statement,
             'difficulty': problem.difficulty,
             'languages': languages
         }
         return Response(data)
-
-
-def problemdetail(request, id):
-
-    print(request.user)
-    problem = get_object_or_404(Problem, id = id)
-    form = SubmissionForm()
-    context = {
-        "problem" : problem,
-        "form" : form,
-    }
-    return render(request, "problemdetail.html", context = context)
 
 class Submit(APIView):
     parser_class = (MultiPartParser,)
@@ -82,6 +62,8 @@ class Submit(APIView):
         return Response("hello")
 
     def post(self, request):
+
+        print(request.data)
         
         serializer = SubmissionSerializer(data=request.data)
         print(request.build_absolute_uri())
@@ -90,7 +72,7 @@ class Submit(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+        
 
 
 def uploadTestCase(request):
