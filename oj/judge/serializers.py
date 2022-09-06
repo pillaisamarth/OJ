@@ -42,3 +42,7 @@ class SubmissionSerializer(serializers.Serializer):
         
 
 
+class SubmissionTableSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Submission
+        fields = '__all__'

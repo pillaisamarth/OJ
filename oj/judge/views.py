@@ -9,7 +9,8 @@ from django.urls import reverse
 import subprocess
 import os
 from django.core.files.storage import FileSystemStorage
-from judge.serializers import SubmissionSerializer, ProblemListSerializer, ProblemDetailSerializer
+from judge import serializers
+from judge.serializers import SubmissionSerializer, ProblemListSerializer, ProblemDetailSerializer, SubmissionTableSerializer
 from oj import settings
 import docker
 from django.utils.encoding import filepath_to_uri
@@ -21,6 +22,7 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from rest_framework import status
 from . import constant
+from rest_framework.pagination import PageNumberPagination
 
 from .forms import SubmissionForm, TestCaseUploadForm
 
@@ -121,15 +123,18 @@ def uploadTestCase(request):
 
 
 
-def submissions(request, id):
-    
-    submissions = Submission.objects.filter(problem__id = id)
-    context = {
-        'submissions' : submissions
-    }
-
-    return render(request, 'submissions.html', context=context)
             
+class Submissions(APIView):
+
+    pagination_class = PageNumberPagination
+
+    def get(self, request, id):
+        paginator = PageNumberPagination()
+        submissions = Submission.objects.filter(problem__id = id)
+        resultPage = paginator.paginate_queryset(queryset=submissions, request=request)
+        serializer = SubmissionTableSerializer(resultPage, many=True)
+        return Response(serializer.data)
+        
 
         
 
