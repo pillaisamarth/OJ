@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
-    'Login',
     'judge',
 ]
 
@@ -138,6 +137,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/Login/login/'
 LOGIN_REDIRECT_URL = '/judge/problemlist/'
+
+AUTH_USER_MODEL = 'judge.UserProfile'
 
 
 try:

@@ -44,14 +44,15 @@ def executeFile(request, submissionId, submittedFile, language):
 
 
 
-def createSubmission(problemId, submittedFile, language):
+def createSubmission(problemId, submittedFile, language, user):
     problem = get_object_or_404(Problem, id = problemId)
     submission = Submission.objects.create_submission(problem=problem)
     submissionId = submission.id
     submission.submittedFile.save(f'{submissionId}.txt', submittedFile)
     submission.submittedFilePath=os.path.join(settings.MEDIA_ROOT, 'problems', str(problemId), 'submissions', f'{submissionId}.txt')
     submission.language = language
-    submission.verdict = None
+    submission.verdict = "Running"
+    submission.user = user
     submission.save()
     
     return submission

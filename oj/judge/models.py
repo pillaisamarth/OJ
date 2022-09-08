@@ -3,9 +3,13 @@ from django.urls import reverse
 import os
 from oj import settings
 from . import constant
+from django.contrib.auth.models import AbstractUser
 
 
-# Create your models here.
+# # Create your models here.
+
+class UserProfile(AbstractUser):
+    pass
 
 class Problem(models.Model):
     title = models.CharField(max_length = 200)
@@ -35,6 +39,7 @@ class SubmissionManager(models.Manager):
 
 
 class Submission(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     problem = models.ForeignKey(Problem, on_delete=models.CASCADE)
     verdict = models.CharField(max_length=255, null=True)
     submitted_at = models.DateTimeField(auto_now_add = True)

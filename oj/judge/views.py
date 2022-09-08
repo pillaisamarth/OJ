@@ -67,11 +67,12 @@ class Submit(APIView):
     def post(self, request):
 
         print(request.data)
+        print(request.user)
         
         serializer = SubmissionSerializer(data=request.data)
         print(request.build_absolute_uri())
         if serializer.is_valid():
-            serializer.save(request=request)
+            serializer.save(request=request, user = request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -143,6 +144,7 @@ class Submissions(APIView):
             'language': submission.get_language_display(),
             'submitted_at' : submission.submitted_at,
             'verdict': submission.verdict,
+            'user': submission.user,
             'numberOfPages' : numberOfPages
         } for submission in resultPage]
         print(resultPage)

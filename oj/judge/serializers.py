@@ -30,15 +30,16 @@ class SubmissionSerializer(serializers.Serializer):
         problemId = validated_data.pop('problemId')
         language = validated_data.pop('language')
         id = validated_data.pop('id')
+        user = validated_data.pop('user')
 
 
         try:
             obj = get_object_or_404(Submission, id = id)
             print(obj.submittedFile)
             print("Here !")
-            return executeFile(request=request, submittedFile=file, language=language, submissionId=id)
+            return executeFile(request=request, submittedFile=file, language=language, submissionId=id, user=user)
         except:
-            return createSubmission(problemId=problemId, submittedFile=file, language=language)
+            return createSubmission(problemId=problemId, submittedFile=file, language=language, user=user)
         
 
 
