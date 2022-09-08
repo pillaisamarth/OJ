@@ -1,4 +1,5 @@
 import filecmp
+import math
 from socket import timeout
 import sys
 from urllib.parse import urljoin
@@ -127,13 +128,25 @@ def uploadTestCase(request):
 class Submissions(APIView):
 
     pagination_class = PageNumberPagination
+    serializer_class = SubmissionTableSerializer
 
     def get(self, request, id):
         paginator = PageNumberPagination()
         submissions = Submission.objects.filter(problem__id = id)
+        submissionCount = submissions.count()
+        pageSize = paginator.page_size
+        numberOfPages = math.ceil(submissionCount / pageSize)
         resultPage = paginator.paginate_queryset(queryset=submissions, request=request)
-        serializer = SubmissionTableSerializer(resultPage, many=True)
-        return Response(serializer.data)
+        data = [{
+            'id' : submission.id,
+            'title': submission.problem.title,
+            'language': submission.get_language_display(),
+            'submitted_at' : submission.submitted_at,
+            'verdict': submission.verdict,
+            'numberOfPages' : numberOfPages
+        } for submission in resultPage]
+        print(resultPage)
+        return Response(data)
         
 
         
