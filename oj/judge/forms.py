@@ -4,7 +4,7 @@ from . import constant
 from judge.models import  Problem
 
 AVAILABLE_PROBLEMS = (
-    (problem.id, problem.title) for problem in Problem.objects.all()
+    # (problem.id, problem.title) for problem in Problem.objects.all()
 )
 
 class SubmissionForm(forms.Form):

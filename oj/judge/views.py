@@ -26,6 +26,7 @@ from . import constant
 from rest_framework.pagination import PageNumberPagination
 
 from .forms import SubmissionForm, TestCaseUploadForm
+from rest_framework import permissions
 
 
 from .models import Problem, Submission, TestCase
@@ -59,6 +60,10 @@ class ProblemDetail(APIView):
 
 class Submit(APIView):
     parser_class = (MultiPartParser,)
+
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+
     
     def get(self, request):
         print(request.build_absolute_uri())
