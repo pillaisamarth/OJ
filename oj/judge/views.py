@@ -38,6 +38,7 @@ def login(request):
 class ProblemList(APIView):
 
     def get(self, request):
+        print(type(request.user))
         problems = Problem.objects.all()
         serializer = ProblemListSerializer(problems, many=True)
         return Response(serializer.data)
@@ -45,6 +46,7 @@ class ProblemList(APIView):
 class ProblemDetail(APIView):
 
     serializer_class = ProblemDetailSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get(self, request, id):
         problem=get_object_or_404(Problem, id = id)
