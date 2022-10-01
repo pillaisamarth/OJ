@@ -1,6 +1,3 @@
-from dataclasses import field
-
-# from judge.views import submission
 from .models import Problem, Submission
 from rest_framework import serializers
 from . import constant
@@ -35,8 +32,6 @@ class SubmissionSerializer(serializers.Serializer):
 
         try:
             obj = get_object_or_404(Submission, id = id)
-            print(obj.submittedFile)
-            print("Here !")
             return executeFile(request=request, submittedFile=file, language=language, submissionId=id, user=user)
         except:
             return createSubmission(problemId=problemId, submittedFile=file, language=language, user=user)

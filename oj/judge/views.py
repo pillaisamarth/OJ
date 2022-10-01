@@ -1,31 +1,17 @@
-import filecmp
 import math
-from socket import timeout
-import sys
-from urllib.parse import urljoin
 from django.shortcuts import get_object_or_404, render, redirect
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.urls import reverse
-import subprocess
 import os
-from django.core.files.storage import FileSystemStorage
-from judge import serializers
 from judge.serializers import SubmissionSerializer, ProblemListSerializer, ProblemDetailSerializer, SubmissionTableSerializer
 from oj import settings
-import docker
-from django.utils.encoding import filepath_to_uri
-
-from django.templatetags.static import static
-
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from rest_framework import status
 from . import constant
 from rest_framework.pagination import PageNumberPagination
-
-from .forms import SubmissionForm, TestCaseUploadForm
+from .forms import TestCaseUploadForm
 from rest_framework import permissions
 
 
@@ -59,6 +45,7 @@ class ProblemDetail(APIView):
             'languages': languages
         }
         return Response(data)
+
 
 class Submit(APIView):
     parser_class = (MultiPartParser,)
@@ -157,11 +144,3 @@ class Submissions(APIView):
         print(resultPage)
         return Response(data)
         
-
-        
-
-def submission(request, id):
-    return HttpResponse("ok")
-            
-
-
